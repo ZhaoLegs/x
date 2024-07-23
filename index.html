@@ -1,0 +1,104 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+  <title>Elon Musk's Tweets</title>  
+  <style>  
+    .container {  
+      max-width: 800px;  
+      margin: 0 auto;  
+      padding: 20px;  
+    }  
+
+    .tweet {  
+      display: flex;  
+      align-items: flex-start;  
+      margin-bottom: 20px;  
+    }  
+
+    .profile-pic {  
+      width: 50px;  
+      height: 50px;  
+      border-radius: 50%;  
+      margin-right: 10px;  
+    }  
+
+    .username {  
+      font-weight: bold;  
+      text-decoration: none;  
+      color: #333;  
+    }  
+
+    .screen-name {  
+      color: #666;  
+      margin-left: 5px;  
+    }  
+
+    .tweet-text {  
+      margin-top: 5px;  
+    }  
+
+    .error-message {  
+      color: red;  
+      font-weight: bold;  
+    }  
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <div id="tweet-container">  
+      <div id="error-message" class="error-message"></div>  
+    </div>  
+  </div>  
+
+  <script src="https://unpkg.com/twitter-lite/dist/twitter-lite.min.js"></script>  
+  <script>  
+    const tweetContainer = document.getElementById('tweet-container');  
+    const errorMessage = document.getElementById('error-message');  
+
+    const twitterClient = new TwitterLite({  
+      consumer_key: 'jcyM3ImWjS7jqD7oBObTy3ZAG',  
+      consumer_secret: 'vbhRAUOfmX7EDRL4IzLyy4VXxGrMeJKCjN7tUJLMT07z3QzWSq',  
+      access_token_key: '2983609905-kwfyGMQd2FefxliJqjJJEBVaHlidOdS6WLV3Exn',  
+      access_token_secret: 'lt6BFdqNn95vqLHzrfff7LDcRYmHh0xEwz0MyTm21I4w5'  
+    });  
+
+    async function fetchElonMuskTweets() {  
+      try {  
+        const { statuses } = await twitterClient.get('/statuses/user_timeline.json?screen_name=elonmusk&count=20&tweet_mode=extended');  
+        updateTweetContainer(statuses);  
+        errorMessage.innerHTML = ''; // 清除任何之前的错误信息  
+      } catch (error) {  
+        console.error('Error fetching tweets:', error);  
+        if (error.response) {  
+          console.error('Twitter API response:', error.response.data);  
+        }  
+        errorMessage.innerHTML = 'Error fetching tweets. Please try again later.';  
+      }  
+    }  
+
+    function updateTweetContainer(tweets) {  
+      tweetContainer.innerHTML = '';  
+      if (tweets.length === 0) {  
+        errorMessage.innerHTML = 'No tweets found.';  
+        return;  
+      }  
+
+      tweets.forEach(tweet => {  
+        const tweetElement = document.createElement('div');  
+        tweetElement.classList.add('tweet');  
+        tweetElement.innerHTML = `  
+          <img src="${tweet.user.profile_image_url_https}" alt="${tweet.user.screen_name}'s profile picture" class="profile-pic">  
+          <div class="tweet-content">  
+            <a href="https://twitter.com/${tweet.user.screen_name}" target="_blank" class="username">${tweet.user.name}</a>  
+            <span class="screen-name">@${tweet.user.screen_name}</span>  
+            <p class="tweet-text">${tweet.full_text}</p>  
+          </div>  
+        `;  
+        tweetContainer.appendChild(tweetElement);  
+      });  
+    }  
+
+    fetchElonMuskTweets();  
+  </script>  
+</body>  
+</html>
